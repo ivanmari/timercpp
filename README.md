@@ -8,7 +8,7 @@ If the timer goes out of scope, it will stop and join the implementation thread.
 ```c++
 Timer t ([&]() {
     cout << "Hey.. After each 1s..." << endl;
-}, 1000ms); 
+}, 1000ms, Mode::PERIODIC); 
 ```
 ### How to compile sample program?
 
