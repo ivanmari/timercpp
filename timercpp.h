@@ -3,38 +3,39 @@
 #include <chrono>
 #include <atomic>
 
+enum class Mode {PERIODIC, ONESHOT};
+
 class Timer {
 	std::atomic<bool> active{true};
 	
     public:
-        void setTimeout(auto function, int delay);
-        void setInterval(auto function, int interval);
+	template<class Rep,class Period = std::ratio<1>>
+        Timer(auto function, const std::chrono::duration<Rep, Period>  duration, Mode mode): active{true},m_mode{mode},
+    m_thread{std::thread ([=]() {
+        if(!active.load()) return;
+	while(active.load())
+	{
+        	std::this_thread::sleep_for(std::chrono::milliseconds(duration));
+        	if(!active.load()) break;
+        	function();
+		if(Mode::ONESHOT == m_mode) break;
+	}
+	std::cout << "Timer stopped\n";
+    })}
+{}
         void stop();
+	std::thread m_thread;
+	Mode m_mode;
+
+	~Timer()
+	{
+		std::cout << "Destructor, stopping timer and joining\n";
+		stop();
+		m_thread.join();
+	}
 
 };
 
-void Timer::setTimeout(auto function, int delay) {
-    active = true;
-    std::thread t([=]() {
-        if(!active.load()) return;
-        std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-        if(!active.load()) return;
-        function();
-    });
-    t.detach();
-}
-
-void Timer::setInterval(auto function, int interval) {
-    active = true;
-    std::thread t([=]() {
-        while(active.load()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(interval));
-            if(!active.load()) return;
-            function();
-        }
-    });
-    t.detach();
-}
 
 void Timer::stop() {
     active = false;

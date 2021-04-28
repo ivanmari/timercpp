@@ -3,19 +3,24 @@
 
 using namespace std;
 
+void function()
+{
+    Timer  t([&]() {
+        cout << "Hey.. I will go out of scope soon..." << endl;
+    }, 1s, Mode::ONESHOT); 
+
+    for(auto i = 0; i < 100; ++i)
+    {
+	    cout << ".";
+    }
+}
+
 int main() {
-    Timer t;
+    function();
+    Timer  t([&]() {
+        cout << "\nHey.. waiting.." << endl;
+    }, 10s, Mode::PERIODIC); 
 
-    t.setInterval([&]() {
-        cout << "Hey.. After each 1s..." << endl;
-    }, 1000); 
-
-    t.setTimeout([&]() {
-        cout << "Hey.. After 5.2s. But I will stop the timer!" << endl;
-        t.stop();
-    }, 5200); 
-
-    
 
     cout << "I am Timer" <<endl;
 
