@@ -1,69 +1,15 @@
 # timercpp
-Javascript like timer for c++ developers
+Thread based timer
 
-This header only library has js equivalent `setTimeout()` and `setInterval()` for c++.
-
-**DISCLAIMER - This implementation uses threads not a queue**
-
-## `setTimeout(auto function, int delay)`
+This fork uses a single thread per timer.
+The timer mode can be PERIODIC or ONESHOT. This is a parameter passed to the constructor
+If the timer goes out of scope, it will stop and join the implementation thread.
 
 ```c++
-Timer t = Timer();
-t.setTimeout([&]() {
-    cout << "Hey.. After 1s." << endl;
-}, 1000); 
-```
-
-## `setInterval(auto function, int interval)`
-
-```c++
-Timer t = Timer();
-t.setInterval([&]() {
+Timer t ([&]() {
     cout << "Hey.. After each 1s..." << endl;
-}, 1000); 
+}, 1000ms); 
 ```
-
-## Sample Program
-
-```c++
-#include <iostream>
-#include "timercpp.h"
-
-using namespace std;
-
-int main() {
-    Timer t = Timer();
-
-    t.setInterval([&]() {
-        cout << "Hey.. After each 1s..." << endl;
-    }, 1000); 
-
-    t.setTimeout([&]() {
-        cout << "Hey.. After 5.2s. But I will stop the timer!" << endl;
-        t.stop();
-    }, 5200); 
-
-    
-
-    cout << "I am Timer" <<endl;
-
-
-    while(true); // Keep main thread active
-}
-```
-
-**Output**
-
-```
-I am Timer
-Hey.. After each 1s...
-Hey.. After each 1s...
-Hey.. After each 1s...
-Hey.. After each 1s...
-Hey.. After each 1s...
-Hey.. After 5.2s. But I will stop the timer!
-```
-
 ### How to compile sample program?
 
 ```bash
