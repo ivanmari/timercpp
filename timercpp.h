@@ -20,7 +20,6 @@ class Timer {
         	function();
 		if(Mode::ONESHOT == m_mode) break;
 	}
-	std::cout << "Timer stopped\n";
     })}
 {}
         void stop();
@@ -29,7 +28,6 @@ class Timer {
 
 	~Timer()
 	{
-		std::cout << "Destructor, stopping timer and joining\n";
 		stop();
 		m_thread.join();
 	}
