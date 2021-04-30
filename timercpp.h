@@ -10,21 +10,30 @@ class Timer {
 	
 public:
 	template<class Rep,class Period = std::ratio<1>>
-        Timer(auto function, const std::chrono::duration<Rep, Period>  duration, Mode mode): active{true},m_mode{mode},
-        m_thread{std::thread ([=]() {
-        if(!active.load()) return;
-		while(active.load())
-		{
-			std::this_thread::sleep_for(duration);
-			if(!active.load()) break;
-			function();
-			if(Mode::ONESHOT == m_mode) break;
-		}
-		})}
-		{}
+	Timer(auto function, const std::chrono::duration<Rep, Period>  duration, Mode mode): active{true},m_mode{mode},
+	m_thread
+	{
+		std::thread 
+		(
+			[=]() 
+			{
+				if(!active.load()) return;
+				while(active.load())
+				{
+					std::this_thread::sleep_for(duration);
+					if(!active.load()) break;
+					function();
+					if(Mode::ONESHOT == m_mode) break;
+				}
+			}
+		)
+	}
+	{}
     
-	void stop();
-
+	void stop()
+	{
+		active = false;
+	}
 
 	~Timer()
 	{
@@ -38,7 +47,3 @@ private:
 	Mode m_mode;
 };
 
-
-void Timer::stop() {
-    active = false;
-}
